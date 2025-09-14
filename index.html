@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/index.css">
     <style>
         body { font-family: 'Poppins', sans-serif; color: #4b5563; background-color: #fdf8f8; }
@@ -39,8 +39,26 @@
         </header>
 
         <main class="container mx-auto p-4 sm:p-6 md:p-8 max-w-2xl">
-            </main>
+            <div class="mb-8 border-b border-gray-200">
+                <nav class="flex -mb-px space-x-4 sm:space-x-6 justify-center" aria-label="Tabs">
+                    <button id="tabPrices" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200 tab-active">Serviços</button>
+                    <button id="tabAgenda" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Agendamento</button>
+                    <button id="tabForm" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Anamnese</button>
+                    <button id="tabInstagram" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Instagram</button>
+                    <button id="tabReport" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Relatório</button>
+                </nav>
+            </div>
+            
+            <div id="pricesView"> ... </div>
+            <div id="agendaView" class="hidden"> ... </div>
+            <div id="formView" class="hidden"> ... </div>
+            <div id="instagramView" class="hidden"> ... </div>
+            <div id="reportView" class="hidden"> ... </div>
+        </main>
         
+        <div id="passwordModal" class="fixed inset-0 ... hidden"> ... </div>
+        <div id="bookingSummary" class="fixed bottom-0 ... translate-y-full"> ... </div>
+
         <footer class="text-center py-6 text-sm text-gray-500">
             <p>Desenvolvido com carinho para <strong>Jessica Rocha</strong></p>
         </footer>
