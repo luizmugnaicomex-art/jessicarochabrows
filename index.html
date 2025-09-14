@@ -8,65 +8,1070 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="/index.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; color: #4b5563; background-color: #fdf8f8; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #4b5563; /* Um cinza mais suave */
+            background-color: #fdf8f8; /* Um fundo rosa muito, muito claro */
+        }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #fce7f3; }
         ::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #ec4899; }
         .required-label::after { content: '*'; color: #ef4444; margin-left: 4px; }
-        .tab-active { border-bottom-color: #ec4899; color: #ec4899; font-weight: 600; }
-        .calendar-day { transition: all 0.2s ease-in-out; }
-        .calendar-day.disabled { color: #d1d5db; cursor: not-allowed; }
-        .calendar-day:not(.disabled):hover { background-color: #fbcfe8; border-radius: 50%; }
-        .calendar-day.selected { background-color: #ec4899; color: white; border-radius: 50%; transform: scale(1.1); }
-        .time-slot.selected { background-color: #ec4899; color: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        .tab-active {
+            border-bottom-color: #ec4899;
+            color: #ec4899;
+            font-weight: 600;
+        }
+        /* Estilos para o Calendário */
+        .calendar-day {
+            transition: all 0.2s ease-in-out;
+        }
+        .calendar-day.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+        .calendar-day:not(.disabled):hover {
+             background-color: #fbcfe8;
+             border-radius: 50%;
+        }
+        .calendar-day.selected {
+            background-color: #ec4899;
+            color: white;
+            border-radius: 50%;
+            transform: scale(1.1);
+        }
+        .time-slot.selected {
+            background-color: #ec4899;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
     </style>
+<link rel="stylesheet" href="/index.css">
 </head>
-<body class="pb-24">
+<body class="pb-24"> <header class="py-6 sm:py-8 text-center bg-white shadow-sm">
+        <div class="container mx-auto px-4">
+            <img src="data:image/jpeg;base64,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" alt="Jessica Rocha" class="w-24 h-24 sm:w-28 sm:w-28 mx-auto rounded-full object-cover border-4 border-pink-200 shadow-lg">
+            <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">Jessica Rocha</h1>
+            <p class="text-md text-pink-500 font-medium tracking-wider">SOBRANCELHAS</p>
+        </div>
+    </header>
 
-    <div id="root">
-        <header class="py-6 sm:py-8 text-center bg-white shadow-sm">
-            <div class="container mx-auto px-4">
-                <img id="profileImage" src="https://storage.googleapis.com/aai-web-samples/jessica-rocha.jpg" alt="Jessica Rocha" class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full object-cover border-4 border-pink-200 shadow-lg">
-                <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">Jessica Rocha</h1>
-                <p class="text-md text-pink-500 font-medium tracking-wider">SOBRANCELHAS</p>
-            </div>
-        </header>
-
-        <main class="container mx-auto p-4 sm:p-6 md:p-8 max-w-2xl">
-            <div class="mb-8 border-b border-gray-200">
-                <nav class="flex -mb-px space-x-4 sm:space-x-6 justify-center" aria-label="Tabs">
-                    <button id="tabPrices" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200 tab-active">Serviços</button>
-                    <button id="tabAgenda" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Agendamento</button>
-                    <button id="tabForm" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Anamnese</button>
-                    <button id="tabInstagram" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Instagram</button>
-                    <button id="tabReport" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">Relatório</button>
-                </nav>
-            </div>
-            
-            <div id="pricesView"> ... </div>
-            <div id="agendaView" class="hidden"> ... </div>
-            <div id="formView" class="hidden"> ... </div>
-            <div id="instagramView" class="hidden"> ... </div>
-            <div id="reportView" class="hidden"> ... </div>
-        </main>
+    <main class="container mx-auto p-4 sm:p-6 md:p-8 max-w-2xl">
+        <div class="mb-8 border-b border-gray-200">
+            <nav class="flex -mb-px space-x-4 sm:space-x-6 justify-center" aria-label="Tabs">
+                 <button id="tabPrices" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200 tab-active">
+                    Serviços
+                </button>
+                 <button id="tabAgenda" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">
+                    Agendamento
+                </button>
+                 <button id="tabForm" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">
+                    Anamnese
+                </button>
+                 <button id="tabInstagram" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">
+                    Instagram
+                </button>
+                 <button id="tabReport" class="whitespace-nowrap py-4 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors duration-200">
+                    Relatório
+                </button>
+            </nav>
+        </div>
         
-        <div id="passwordModal" class="fixed inset-0 ... hidden"> ... </div>
-        <div id="bookingSummary" class="fixed bottom-0 ... translate-y-full"> ... </div>
+        <div id="pricesView">
+             <header class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Serviços e Preços</h2>
+                <p class="text-gray-600 mt-2">Selecione os serviços que deseja para iniciar o agendamento.</p>
+            </header>
+            <div id="serviceList" class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-2">
+                <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="40" data-name="Design personalizado de sobrancelhas">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Design personalizado de sobrancelhas <span class="text-xs text-gray-500">(pinça e/ou cera)</span></p>
+                        <p class="font-semibold text-gray-800">R$40,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Design de Sobrancelhas (Pinça/Linha/Cera)" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="50" data-name="Design com henna">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Design com henna</p>
+                        <p class="font-semibold text-gray-800">R$50,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Design com Aplicação de Henna" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="55" data-name="Design com tintura">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Design com tintura</p>
+                        <p class="font-semibold text-gray-800">R$55,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Design com tintura" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="60" data-name="Spa de sobrancelhas">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Spa de sobrancelhas <span class="text-xs text-gray-500">(limpeza, esfoliação, máscara e hidratação)</span></p>
+                        <p class="font-semibold text-gray-800">R$60,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Spa de sobrancelhas" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="70" data-name="Spa de sobrancelhas + design">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Spa de sobrancelhas + design</p>
+                        <p class="font-semibold text-gray-800">R$70,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Spa de sobrancelhas + design" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="100" data-name="Brow Lamination (com coloração e hidratação)">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Brow Lamination <span class="text-xs text-gray-500">(com coloração e hidratação)</span></p>
+                        <p class="font-semibold text-gray-800">R$100,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Brow Lamination" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="85" data-name="Brow Lamination (sem coloração)">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Brow Lamination <span class="text-xs text-gray-500">(sem coloração)</span></p>
+                        <p class="font-semibold text-gray-800">R$85,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Brow Lamination (sem coloração)" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                 <label class="flex justify-between items-center border-b border-pink-100 py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="0" data-name="Manutenção com hidratação, B.L">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Manutenção com hidratação, B.L <span class="text-xs text-gray-500">(retorno em até 20-30 dias)</span></p>
+                        <p class="font-semibold text-pink-600">brinde / 5% off no Design</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Manutenção com hidratação, B.L" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+                <label class="flex justify-between items-center py-3 cursor-pointer hover:bg-pink-50/50 p-3 rounded-lg transition duration-200" data-price="20" data-name="Buço">
+                    <div class="flex-1">
+                        <p class="text-gray-700 font-medium">Buço <span class="text-xs text-gray-500">(pinça ou cera quente)</span></p>
+                        <p class="font-semibold text-gray-800">R$20,00</p>
+                    </div>
+                    <input type="checkbox" name="serviceSelection" value="Buço" class="ml-4 h-5 w-5 text-pink-600 rounded-md focus:ring-pink-500 border-gray-300">
+                </label>
+            </div>
+        </div>
 
-        <footer class="text-center py-6 text-sm text-gray-500">
-            <p>Desenvolvido com carinho para <strong>Jessica Rocha</strong></p>
-        </footer>
+        <div id="agendaView" class="hidden">
+            <header class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Escolha a Data e Hora</h2>
+                <p class="text-gray-600 mt-2">Selecione o melhor dia e horário para o seu atendimento.</p>
+            </header>
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-8">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 border-b-2 border-pink-200 pb-2 mb-4">Serviços Selecionados</h3>
+                    <div id="agendaServiceList" class="space-y-2 mb-4 text-gray-600"></div>
+                    <p class="text-right font-bold text-lg text-gray-800">Total: <span id="agendaTotal">R$0,00</span></p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Selecione a Data</h3>
+                    <div id="calendar" class="w-full"></div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Selecione o Horário</h3>
+                    <div id="timeSlots" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                         <p class="text-gray-500 col-span-full">Por favor, selecione uma data para ver os horários disponíveis.</p>
+                    </div>
+                </div>
+                 <div class="pt-4">
+                    <button id="goToFormFromAgendaBtn" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none" disabled>
+                        <span>Preencher Ficha de Anamnese</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="formView" class="hidden">
+            <header class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">FICHA DE ANAMNESE E TERMO</h2>
+                <p class="text-gray-600 mt-2">Para garantir sua segurança e um resultado perfeito, por favor, preencha o formulário abaixo com atenção.</p>
+            </header>
+
+            <form id="anamneseForm" class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-8">
+                <fieldset class="space-y-4">
+                    <legend class="text-xl font-semibold text-pink-600 border-b-2 border-pink-200 pb-2 mb-4">DADOS PESSOAIS</legend>
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1 required-label">Nome Completo</label>
+                        <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+                            <input type="date" id="birthDate" name="birthDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 required-label">Celular (WhatsApp)</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="(71) 99999-9999" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200">
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Como nos conheceu?</p>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 text-gray-700">
+                            <label><input type="radio" name="howMet" value="Instagram" class="mr-2 focus:ring-pink-500 text-pink-600">Instagram</label>
+                            <label><input type="radio" name="howMet" value="Indicação" class="mr-2 focus:ring-pink-500 text-pink-600">Indicação</label>
+                            <label><input type="radio" name="howMet" value="Google" class="mr-2 focus:ring-pink-500 text-pink-600">Google</label>
+                            <label><input type="radio" name="howMet" value="Outro" class="mr-2 focus:ring-pink-500 text-pink-600">Outro</label>
+                        </div>
+                         <input type="text" id="howMetOther" name="howMetOther" placeholder="Se outro, especifique aqui..." class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200 hidden">
+                    </div>
+                </fieldset>
+    
+                <fieldset class="space-y-4">
+                    <legend class="text-xl font-semibold text-pink-600 border-b-2 border-pink-200 pb-2 mb-4 required-label">PROCEDIMENTO DESEJADO</legend>
+                    <p id="procedureError" class="text-red-500 text-sm -mt-4 hidden pb-2">Por favor, selecione ao menos um procedimento.</p>
+                     <div class="space-y-2 text-gray-700">
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Design de Sobrancelhas (Pinça/Linha/Cera)" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Design de Sobrancelhas (Pinça/Linha/Cera)</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Design com Aplicação de Henna" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Design com Aplicação de Henna</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Brow Lamination" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Brow Lamination</label>
+                         <label class="flex items-center"><input type="checkbox" name="procedure" value="Design com tintura" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Design com tintura</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Spa de sobrancelhas" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Spa de sobrancelhas</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Spa de sobrancelhas + design" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Spa de sobrancelhas + design</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Brow Lamination (sem coloração)" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Brow Lamination (sem coloração)</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Manutenção com hidratação, B.L" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Manutenção com hidratação, B.L</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Buço" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Buço</label>
+                        <label class="flex items-center"><input type="checkbox" name="procedure" value="Outro" id="procedureOtherCheckbox" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Outro</label>
+                    </div>
+                    <input type="text" id="procedureOther" name="procedureOther" placeholder="Se outro, qual procedimento?" class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200 hidden">
+                </fieldset>
+                
+                <fieldset class="space-y-6">
+                    <legend class="text-xl font-semibold text-pink-600 border-b-2 border-pink-200 pb-2 mb-4">HISTÓRICO DE SAÚDE</legend>
+                     <p class="text-sm text-gray-600 -mt-2">Sua segurança é nossa prioridade. Por favor, seja sincera nas respostas.</p>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Possui alergia? (cosméticos, esmaltes, tinturas, etc)</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="allergies" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="allergies" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                        <input type="text" id="allergiesDetail" placeholder="Se sim, especifique..." class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg transition duration-200 hidden">
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Está grávida ou amamentando?</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="pregnant" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="pregnant" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Qual o seu tipo de pele?</p>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 text-gray-700">
+                            <label><input type="radio" name="skinType" value="Seca" required class="mr-2 focus:ring-pink-500 text-pink-600">Seca</label>
+                            <label><input type="radio" name="skinType" value="Oleosa" class="mr-2 focus:ring-pink-500 text-pink-600">Oleosa</label>
+                            <label><input type="radio" name="skinType" value="Mista" class="mr-2 focus:ring-pink-500 text-pink-600">Mista</label>
+                            <label><input type="radio" name="skinType" value="Normal" class="mr-2 focus:ring-pink-500 text-pink-600">Normal</label>
+                        </div>
+                    </div>
+                     <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Possui alguma das seguintes condições?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center"><input type="checkbox" name="otherHealth" value="Diabetes" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Diabetes</label>
+                            <label class="flex items-center"><input type="checkbox" name="otherHealth" value="Problema de cicatrização" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Problema de cicatrização</label>
+                            <label class="flex items-center"><input type="checkbox" name="otherHealth" value="Doença autoimune" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Doença autoimune</label>
+                            <label class="flex items-center"><input type="checkbox" name="otherHealth" value="Alergia grave (choque anafilático)" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Alergia grave (choque anafilático)</label>
+                            <label class="flex items-center"><input type="checkbox" id="otherHealthNone" value="Nenhuma" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Nenhuma das opções</label>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Possui alguma condição de pele na região facial?</p>
+                        <div class="space-y-2 text-sm text-gray-700">
+                            <label class="flex items-center"><input type="checkbox" name="skinCondition" value="Dermatite / Eczema" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Dermatite / Eczema</label>
+                            <label class="flex items-center"><input type="checkbox" name="skinCondition" value="Psoríase" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Psoríase</label>
+                            <label class="flex items-center"><input type="checkbox" name="skinCondition" value="Rosácea" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Rosácea</label>
+                            <label class="flex items-center"><input type="checkbox" name="skinCondition" value="Acne ativa na região" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Acne ativa ou cística na região</label>
+                            <label class="flex items-center"><input type="checkbox" name="skinCondition" value="Pele extremamente sensível" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Pele extremamente sensível</label>
+                             <label class="flex items-center"><input type="checkbox" id="skinConditionNone" value="Nenhuma" class="mr-3 h-4 w-4 rounded text-pink-600 focus:ring-pink-500">Nenhuma das opções</label>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Possui lesões ativas na área das sobrancelhas?</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="hasLesions" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="hasLesions" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Fez procedimento facial recentemente? (Peeling, etc)</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="recentProcedure" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="recentProcedure" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                        <input type="text" id="recentProcedureDetail" placeholder="Se sim, qual e quando?" class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg transition duration-200 hidden">
+                    </div>
+                     <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Já fez Brow Lamination antes?</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="browLamination" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="browLamination" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                        <input type="date" id="browLaminationDetail" class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg transition duration-200 hidden">
+                    </div>
+                     <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2 required-label">Faz uso contínuo de ácido na pele ou Roacutan?</p>
+                        <div class="flex gap-4 text-gray-700"><label><input type="radio" name="medication" value="Não" required class="mr-2 focus:ring-pink-500 text-pink-600">Não</label><label><input type="radio" name="medication" value="Sim" class="mr-2 focus:ring-pink-500 text-pink-600">Sim</label></div>
+                        <input type="text" id="medicationDetail" placeholder="Se sim, especifique..." class="w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg transition duration-200 hidden">
+                    </div>
+                </fieldset>
+    
+                <fieldset class="space-y-4">
+                    <legend class="text-xl font-semibold text-pink-600 border-b-2 border-pink-200 pb-2 mb-4">SUAS EXPECTATIVAS</legend>
+                     <div>
+                        <label for="currentBrows" class="block text-sm font-medium text-gray-700 mb-1">Como você descreveria suas sobrancelhas hoje?</label>
+                        <textarea id="currentBrows" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200"></textarea>
+                    </div>
+                     <div>
+                        <label for="goal" class="block text-sm font-medium text-gray-700 mb-1">Qual é o seu principal objetivo com este procedimento?</label>
+                        <textarea id="goal" rows="2" placeholder="Ex: Mais volume, definição, arco mais marcado..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200"></textarea>
+                    </div>
+                    <div>
+                        <p class="block text-sm font-medium text-gray-700 mb-2">Quão naturais ou marcadas você prefere? (1 a 5)</p>
+                        <div class="flex justify-between text-xs text-gray-500 px-1"><span>Natural</span><span>Marcada</span></div>
+                        <input type="range" id="styleScale" min="1" max="5" value="3" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                        <div class="flex justify-between text-xs px-1 text-gray-700"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                    </div>
+                </fieldset>
+    
+                <fieldset>
+                    <legend class="text-xl font-semibold text-pink-600 border-b-2 border-pink-200 pb-2 mb-4">TERMO E AUTORIZAÇÃO</legend>
+                    <div class="space-y-3 text-sm text-gray-600 bg-pink-50/50 p-4 rounded-lg">
+                        <p>Eu, <span id="clientNameDisplay" class="font-semibold text-gray-700">...</span>, declaro que todas as informações fornecidas são verdadeiras.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Fui informada sobre o procedimento e os cuidados pré e pós.</li>
+                            <li>Estou ciente de que a omissão de informações sobre minha saúde é de minha responsabilidade.</li>
+                            <li>Concordo em seguir as orientações profissionais para os cuidados em casa.</li>
+                        </ul>
+                    </div>
+                     <div class="mt-4 flex items-start">
+                        <input id="imageAuth" name="imageAuth" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500 mt-1">
+                        <label for="imageAuth" class="ml-3 block text-sm text-gray-700">Autorizo o uso de imagens do resultado para divulgação, com a devida proteção da minha identidade.</label>
+                    </div>
+                    <div class="mt-4">
+                         <label for="signature" class="block text-sm font-medium text-gray-700 mb-1 required-label">Assinatura Digital (digite seu nome completo)</label>
+                        <input type="text" id="signature" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200" placeholder="Digite seu nome completo aqui">
+                    </div>
+                </fieldset>
+    
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                        <span>Enviar e Agendar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="instagramView" class="hidden">
+             <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <div class="flex-shrink-0">
+                        <img class="h-24 w-24 sm:h-32 sm:w-32 rounded-full object-cover ring-4 ring-pink-200 shadow-md" src="data:image/jpeg;base64,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" alt="Profile Picture">
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold text-gray-800">jessicarochabrows</h2>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 my-3 text-gray-700">
+                            <p><span class="font-semibold">17</span> publicações</p>
+                            <p><span class="font-semibold">562</span> seguidores</p>
+                            <p><span class="font-semibold">897</span> seguindo</p>
+                        </div>
+                        <div class="text-gray-600 text-sm space-y-1">
+                           <p class="font-semibold text-gray-800">JESSICA ROCHA | SOBRANCELHAS Lauro de Freitas</p>
+                           <p>Sobrancelhas que contam a sua história 🇵🇹</p>
+                           <p>Olhar natural, elegante e único ✨</p>
+                           <p>Dicas, inspirações e resultados reais todos os dias!</p>
+                        </div>
+                        <a href="https://www.instagram.com/jessicarochabrows/" target="_blank" rel="noopener noreferrer" class="mt-4 inline-block w-full sm:w-auto text-center bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                            Seguir no Instagram
+                        </a>
+                    </div>
+                </div>
+             </div>
+        </div>
+
+        <div id="reportView" class="hidden">
+            <header class="mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Relatório de Clientes</h2>
+                <p class="text-gray-600 mt-2">Visualize e exporte os dados de todas as clientes cadastradas.</p>
+            </header>
+
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <button id="downloadCsv" class="w-full sm:w-auto flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-md">Exportar (CSV)</button>
+                    <button id="downloadPdf" class="w-full sm:w-auto flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-md">Exportar (PDF)</button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Celular</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Procedimento</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Cadastro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                    </table>
+                     <p id="noClientsMessage" class="text-center py-8 text-gray-500 hidden">Nenhum cliente cadastrado ainda.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Acesso Restrito</h2>
+            <p class="text-gray-600 mb-4">Por favor, digite a senha para visualizar o relatório de clientes.</p>
+            <form id="passwordForm">
+                <input type="password" id="passwordInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 transition duration-200" placeholder="Sua senha">
+                <p id="passwordError" class="text-red-500 text-sm mt-2 hidden">Senha incorreta. Tente novamente.</p>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" id="cancelPassword" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors duration-200">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-colors duration-200">Entrar</button>
+                </div>
+            </form>
+        </div>
     </div>
+    
+    <div id="bookingSummary" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] transition-transform transform translate-y-full z-40">
+        <div class="container mx-auto max-w-2xl flex justify-between items-center">
+            <div>
+                <p class="font-semibold text-gray-800">Total: <span id="bookingTotal">R$0,00</span></p>
+                <p class="text-sm text-gray-500"><span id="bookingCount">0</span> serviço(s) selecionado(s)</p>
+            </div>
+            <button id="goToAgendaBtn" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none" disabled>Agendar</button>
+        </div>
+    </div>
+
+
+    <footer class="text-center py-6 text-sm text-gray-500">
+        <p>Desenvolvido com carinho para <strong>Jessica Rocha</strong></p>
+        <p class="mt-1">
+            <a href="https://www.instagram.com/jessicarochabrows" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-pink-600 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.282.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.231 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/></svg>
+                @jessicarochabrows
+            </a>
+        </p>
+    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const { jsPDF } = window.jspdf;
+            const form = document.getElementById('anamneseForm');
+
+            // --- Estado do Agendamento ---
+            let bookingState = {
+                services: [], // { name: '...', price: X, value: '...' }
+                total: 0,
+                date: null, // YYYY-MM-DD
+                time: null, // HH:MM
+                displayDate: null // dd/mm/yyyy
+            };
+            let currentDate = new Date();
+            
+            // --- Funções de Persistência de Estado ---
+            function saveBookingState() {
+                sessionStorage.setItem('bookingState', JSON.stringify(bookingState));
+            }
+
+            function loadBookingState() {
+                const savedState = sessionStorage.getItem('bookingState');
+                if (savedState) {
+                    bookingState = JSON.parse(savedState);
+                    if (bookingState.date) {
+                        // Ensure currentDate reflects the saved date for calendar rendering
+                        currentDate = new Date(bookingState.date + 'T00:00:00');
+                    }
+                }
+            }
+            
+            // Lógica das Abas
+            const tabPrices = document.getElementById('tabPrices');
+            const tabAgenda = document.getElementById('tabAgenda');
+            const tabForm = document.getElementById('tabForm');
+            const tabReport = document.getElementById('tabReport');
+            const tabInstagram = document.getElementById('tabInstagram');
+            const pricesView = document.getElementById('pricesView');
+            const agendaView = document.getElementById('agendaView');
+            const formView = document.getElementById('formView');
+            const reportView = document.getElementById('reportView');
+            const instagramView = document.getElementById('instagramView');
+            
+            // --- Elementos do Agendamento ---
+            const serviceList = document.getElementById('serviceList');
+            const bookingSummary = document.getElementById('bookingSummary');
+            const bookingTotal = document.getElementById('bookingTotal');
+            const bookingCount = document.getElementById('bookingCount');
+            const goToAgendaBtn = document.getElementById('goToAgendaBtn');
+            const agendaServiceList = document.getElementById('agendaServiceList');
+            const agendaTotal = document.getElementById('agendaTotal');
+            const calendarContainer = document.getElementById('calendar');
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            const goToFormFromAgendaBtn = document.getElementById('goToFormFromAgendaBtn');
+            
+            // --- Elementos do Modal de Senha ---
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordForm = document.getElementById('passwordForm');
+            const passwordInput = document.getElementById('passwordInput');
+            const cancelPassword = document.getElementById('cancelPassword');
+            const passwordError = document.getElementById('passwordError');
+            
+            // --- Inicialização e Restauração de Estado ---
+            loadBookingState();
+
+            function showView(viewToShow, tabToActivate) {
+                [pricesView, agendaView, formView, reportView, instagramView].forEach(view => view.classList.add('hidden'));
+                [tabPrices, tabAgenda, tabForm, tabReport, tabInstagram].forEach(tab => tab.classList.remove('tab-active'));
+                
+                viewToShow.classList.remove('hidden');
+                tabToActivate.classList.add('tab-active');
+                window.scrollTo(0, 0);
+            }
+
+            tabPrices.addEventListener('click', () => showView(pricesView, tabPrices));
+            tabAgenda.addEventListener('click', () => showView(agendaView, tabAgenda));
+            tabForm.addEventListener('click', () => showView(formView, tabForm));
+            tabInstagram.addEventListener('click', () => showView(instagramView, tabInstagram));
+            
+            tabReport.addEventListener('click', () => {
+                if (sessionStorage.getItem('isAuthenticated') === 'true') {
+                    showView(reportView, tabReport);
+                    loadReport();
+                } else {
+                    openPasswordModal();
+                }
+            });
+
+            // --- Lógica do Agendamento ---
+            
+            // 1. Seleção de Serviços
+            serviceList.addEventListener('change', (e) => {
+                if (e.target.name === 'serviceSelection') {
+                    const selectedCheckboxes = serviceList.querySelectorAll('input[name="serviceSelection"]:checked');
+                    bookingState.services = [];
+                    bookingState.total = 0;
+
+                    selectedCheckboxes.forEach(checkbox => {
+                        const serviceElement = checkbox.closest('label');
+                        const price = parseFloat(serviceElement.dataset.price);
+                        const name = serviceElement.dataset.name;
+                        const value = checkbox.value;
+                        bookingState.services.push({ name, price, value });
+                        bookingState.total += price;
+                    });
+                    updateBookingSummaryUI();
+                    saveBookingState();
+                }
+            });
+
+            function updateBookingSummaryUI() {
+                const count = bookingState.services.length;
+                bookingCount.textContent = count;
+                bookingTotal.textContent = `R$${bookingState.total.toFixed(2).replace('.', ',')}`;
+
+                if (count > 0) {
+                    bookingSummary.classList.remove('translate-y-full');
+                    goToAgendaBtn.disabled = false;
+                } else {
+                    bookingSummary.classList.add('translate-y-full');
+                    goToAgendaBtn.disabled = true;
+                }
+            }
+            
+            goToAgendaBtn.addEventListener('click', () => {
+                showView(agendaView, tabAgenda);
+                renderAgendaSummary();
+                renderCalendar();
+            });
+
+            // 2. Visualização do Agendamento (Calendário e Horários)
+            function renderAgendaSummary() {
+                 agendaServiceList.innerHTML = bookingState.services.map(s => `
+                    <div class="flex justify-between">
+                        <span>${s.name}</span>
+                        <span class="font-medium">R$${s.price.toFixed(2).replace('.', ',')}</span>
+                    </div>`).join('');
+                agendaTotal.textContent = `R$${bookingState.total.toFixed(2).replace('.', ',')}`;
+            }
+
+            function renderCalendar() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                let calendarHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <button id="prevMonth" class="p-2 rounded-full hover:bg-pink-100 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                        <h3 class="font-semibold text-lg">${monthNames[month]} ${year}</h3>
+                        <button id="nextMonth" class="p-2 rounded-full hover:bg-pink-100 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                    </div>
+                    <div class="grid grid-cols-7 text-center text-sm text-gray-500 mb-2 font-medium">
+                        <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
+                    </div>
+                    <div class="grid grid-cols-7 text-center gap-1">
+                `;
+
+                for (let i = 0; i < firstDay; i++) {
+                    calendarHTML += '<div></div>';
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDate = new Date(year, month, day);
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    
+                    let classes = 'calendar-day h-9 w-9 flex items-center justify-center cursor-pointer';
+                    if (dayDate < today) {
+                        classes += ' disabled';
+                    }
+                    if (dateStr === bookingState.date) {
+                        classes += ' selected';
+                    }
+                    
+                    calendarHTML += `<div class="${classes}" data-date="${dateStr}">${day}</div>`;
+                }
+
+                calendarHTML += '</div>';
+                calendarContainer.innerHTML = calendarHTML;
+
+                document.getElementById('prevMonth').addEventListener('click', () => {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    renderCalendar();
+                });
+                document.getElementById('nextMonth').addEventListener('click', () => {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    renderCalendar();
+                });
+
+                calendarContainer.querySelectorAll('.calendar-day:not(.disabled)').forEach(dayEl => {
+                    dayEl.addEventListener('click', () => {
+                        bookingState.date = dayEl.dataset.date;
+                        bookingState.displayDate = new Date(bookingState.date + 'T00:00:00').toLocaleDateString('pt-BR');
+                        bookingState.time = null; // Reset time on new date selection
+                        renderCalendar();
+                        renderTimeSlots();
+                        checkIfReadyToProceed();
+                        saveBookingState();
+                    });
+                });
+            }
+            
+            function renderTimeSlots() {
+                const selectedDate = new Date(bookingState.date + 'T00:00:00');
+                const dayOfWeek = selectedDate.getDay(); // 0=Sunday, 6=Saturday
+                
+                let availableTimes = [];
+                
+                // Weekends (Saturday or Sunday)
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    availableTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
+                } 
+                // Weekdays (Monday to Friday)
+                else {
+                    availableTimes = ['14:00', '14:30', '15:00', '15:30'];
+                }
+
+                let timeSlotsHTML = '';
+                if(bookingState.date && availableTimes.length > 0) {
+                    availableTimes.forEach(time => {
+                        const classes = bookingState.time === time ? 'time-slot selected' : 'time-slot';
+                        timeSlotsHTML += `<button class="${classes} bg-pink-50 hover:bg-pink-200 text-gray-700 font-semibold py-2 px-2 rounded-lg transition-all duration-200">${time}</button>`;
+                    });
+                } else if (!bookingState.date) {
+                    timeSlotsHTML = `<p class="text-gray-500 col-span-full">Por favor, selecione uma data para ver os horários disponíveis.</p>`;
+                } else {
+                    timeSlotsHTML = `<p class="text-gray-500 col-span-full">Não há horários disponíveis para este dia.</p>`;
+                }
+
+                timeSlotsContainer.innerHTML = timeSlotsHTML;
+                
+                timeSlotsContainer.querySelectorAll('.time-slot').forEach(slotEl => {
+                    slotEl.addEventListener('click', () => {
+                        bookingState.time = slotEl.textContent;
+                        renderTimeSlots();
+                        checkIfReadyToProceed();
+                        saveBookingState();
+                    });
+                });
+            }
+
+            function checkIfReadyToProceed() {
+                if (bookingState.date && bookingState.time) {
+                    goToFormFromAgendaBtn.disabled = false;
+                } else {
+                    goToFormFromAgendaBtn.disabled = true;
+                }
+            }
+            
+            goToFormFromAgendaBtn.addEventListener('click', () => {
+                showView(formView, tabForm);
+                
+                // ** Sincronização de Serviços com o Formulário **
+                // Preenche automaticamente os checkboxes de procedimento no formulário de anamnese
+                // com base nos serviços que o cliente selecionou na primeira aba.
+                // Isso garante consistência e melhora a experiência do usuário.
+                const formProcedureCheckboxes = document.querySelectorAll('input[name="procedure"]');
+                
+                // Primeiro, desmarca todos para garantir um estado limpo.
+                formProcedureCheckboxes.forEach(cb => cb.checked = false); 
+                
+                // Em seguida, marca os que foram selecionados anteriormente.
+                bookingState.services.forEach(service => {
+                    const matchingCheckbox = document.querySelector(`input[name="procedure"][value="${service.value}"]`);
+                    if (matchingCheckbox) {
+                        matchingCheckbox.checked = true;
+                    }
+                });
+            });
+
+
+            // --- Lógica do Formulário (Existente com adaptações) ---
+
+            function openPasswordModal() {
+                passwordModal.classList.remove('hidden');
+                passwordInput.focus();
+            }
+
+            function closePasswordModal() {
+                passwordModal.classList.add('hidden');
+                passwordInput.value = '';
+                passwordError.classList.add('hidden');
+            }
+
+            passwordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (passwordInput.value === 'Apolo@0606') {
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    closePasswordModal();
+                    showView(reportView, tabReport);
+                    loadReport();
+                } else {
+                    passwordError.classList.remove('hidden');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+
+            cancelPassword.addEventListener('click', closePasswordModal);
+            passwordModal.addEventListener('click', (e) => {
+                if (e.target === passwordModal) closePasswordModal();
+            });
+
+            const setupConditionalField = (radioName, detailId) => {
+                const radios = document.querySelectorAll(`input[name="${radioName}"]`);
+                const detailInput = document.getElementById(detailId);
+                radios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (radio.value === 'Sim' && radio.checked) {
+                            detailInput.classList.remove('hidden'); detailInput.required = true;
+                        } else {
+                            detailInput.classList.add('hidden'); detailInput.required = false; detailInput.value = '';
+                        }
+                    });
+                });
+            };
+
+             const setupOtherField = (radioName, detailId, checkValue = 'Outro') => {
+                const radios = document.querySelectorAll(`input[name="${radioName}"]`);
+                const detailInput = document.getElementById(detailId);
+                radios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (radio.checked && radio.value === checkValue) {
+                            detailInput.classList.remove('hidden'); detailInput.required = true;
+                        } else {
+                            detailInput.classList.add('hidden'); detailInput.required = false; detailInput.value = '';
+                        }
+                    });
+                });
+            };
+
+            setupConditionalField('allergies', 'allergiesDetail');
+            setupConditionalField('recentProcedure', 'recentProcedureDetail');
+            setupConditionalField('medication', 'medicationDetail');
+            setupOtherField('howMet', 'howMetOther');
+            
+            const procedureOtherCheckbox = document.getElementById('procedureOtherCheckbox');
+            const procedureOtherInput = document.getElementById('procedureOther');
+            procedureOtherCheckbox.addEventListener('change', () => {
+                if (procedureOtherCheckbox.checked) {
+                    procedureOtherInput.classList.remove('hidden');
+                    procedureOtherInput.required = true;
+                } else {
+                    procedureOtherInput.classList.add('hidden');
+                    procedureOtherInput.required = false;
+                    procedureOtherInput.value = '';
+                }
+            });
+
+            setupConditionalField('browLamination', 'browLaminationDetail');
+            
+            const setupNoneCheckbox = (checkboxName, noneCheckboxId) => {
+                const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`);
+                const noneCheckbox = document.getElementById(noneCheckboxId);
+
+                noneCheckbox.addEventListener('change', () => {
+                    if (noneCheckbox.checked) {
+                        checkboxes.forEach(box => {
+                            if(box !== noneCheckbox) { box.checked = false; box.disabled = true; }
+                        });
+                    } else {
+                         checkboxes.forEach(box => box.disabled = false);
+                    }
+                });
+                 checkboxes.forEach(box => {
+                    if(box !== noneCheckbox) {
+                        box.addEventListener('change', () => {
+                            if (box.checked) {
+                                noneCheckbox.checked = false; noneCheckbox.disabled = true;
+                            } else {
+                                const anyChecked = [...checkboxes].some(b => b !== noneCheckbox && b.checked);
+                                if (!anyChecked) {
+                                    noneCheckbox.disabled = false;
+                                }
+                            }
+                        });
+                    }
+                });
+            };
+
+            setupNoneCheckbox('skinCondition', 'skinConditionNone');
+            setupNoneCheckbox('otherHealth', 'otherHealthNone');
+
+            const fullNameInput = document.getElementById('fullName');
+            const signatureInput = document.getElementById('signature');
+            const clientNameDisplay = document.getElementById('clientNameDisplay');
+            fullNameInput.addEventListener('input', () => {
+                clientNameDisplay.textContent = fullNameInput.value || '...';
+                signatureInput.value = fullNameInput.value;
+            });
+            signatureInput.addEventListener('input', () => {
+                fullNameInput.value = signatureInput.value;
+                clientNameDisplay.textContent = signatureInput.value || '...';
+            });
+            
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const procedureError = document.getElementById('procedureError');
+                procedureError.classList.add('hidden');
+                
+                if (document.querySelectorAll('input[name="procedure"]:checked').length === 0) {
+                    procedureError.classList.remove('hidden');
+                    document.getElementById('procedureError').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                const getRadioValue = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || 'Não preenchido';
+                
+                // Dados do Formulário
+                const fullName = document.getElementById('fullName').value;
+                const birthDateValue = document.getElementById('birthDate').value;
+                const birthDate = birthDateValue ? new Date(birthDateValue).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Não informado';
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value || 'Não informado';
+                let howMet = getRadioValue('howMet');
+                if (howMet === 'Outro') howMet += `: ${document.getElementById('howMetOther').value}`;
+                const proceduresSelected = [...document.querySelectorAll('input[name="procedure"]:checked')].map(el => el.value === 'Outro' ? `Outro: ${document.getElementById('procedureOther').value || 'não especificado'}` : el.value);
+                let allergies = getRadioValue('allergies');
+                if (allergies === 'Sim') allergies += `: ${document.getElementById('allergiesDetail').value}`;
+                const pregnant = getRadioValue('pregnant');
+                const skinType = getRadioValue('skinType');
+                const otherHealthIssues = [...document.querySelectorAll('input[name="otherHealth"]:checked')].map(el => el.value).join(', ') || 'Nenhuma informada';
+                const skinConditions = [...document.querySelectorAll('input[name="skinCondition"]:checked')].map(el => el.value).join(', ') || 'Nenhuma informada';
+                const hasLesions = getRadioValue('hasLesions');
+                let recentProcedure = getRadioValue('recentProcedure');
+                if (recentProcedure === 'Sim') recentProcedure += `: ${document.getElementById('recentProcedureDetail').value}`;
+                let browLamination = getRadioValue('browLamination');
+                if (browLamination === 'Sim') {
+                    const laminationDateValue = document.getElementById('browLaminationDetail').value;
+                    browLamination += `: ${laminationDateValue ? new Date(laminationDateValue).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'Data não informada'}`;
+                }
+                let medication = getRadioValue('medication');
+                if (medication === 'Sim') medication += `: ${document.getElementById('medicationDetail').value}`;
+                const currentBrows = document.getElementById('currentBrows').value || 'Não preenchido';
+                const goal = document.getElementById('goal').value || 'Não preenchido';
+                const styleScale = document.getElementById('styleScale').value;
+                const imageAuth = document.getElementById('imageAuth').checked ? 'Sim' : 'Não';
+                const signature = document.getElementById('signature').value;
+                const today = new Date();
+                const todayFormatted = today.toLocaleDateString('pt-BR');
+
+                const clientRecord = {
+                    id: Date.now(),
+                    name: fullName,
+                    phone: phone,
+                    procedure: bookingState.services.map(s => s.name).join(', '),
+                    registrationDate: todayFormatted,
+                    appointmentDateTime: `${bookingState.displayDate} às ${bookingState.time}`,
+                    fullData: {
+                        fullName, birthDate, phone, email, howMet,
+                        services: bookingState.services,
+                        total: bookingState.total,
+                        appointmentDateTime: `${bookingState.displayDate} às ${bookingState.time}`,
+                        allergies, pregnant, skinType, otherHealthIssues, skinConditions, hasLesions, recentProcedure, browLamination, medication,
+                        currentBrows, goal, styleScale, imageAuth, signature, todayFormatted
+                    }
+                };
+
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                clients.push(clientRecord);
+                localStorage.setItem('clients', JSON.stringify(clients));
+                
+                const servicesText = bookingState.services.map(s => ` - ${s.name}: R$${s.price.toFixed(2).replace('.', ',')}`).join('\n');
+                const message = `
+*✨ NOVO AGENDAMENTO E FICHA ✨*
+
+*--- DADOS DO AGENDAMENTO ---*
+*Cliente:* ${fullName}
+*Data:* ${bookingState.displayDate}
+*Horário:* ${bookingState.time}
+
+*--- SERVIÇOS SELECIONADOS ---*
+${servicesText}
+*Total:* R$${bookingState.total.toFixed(2).replace('.', ',')}
+
+*--- DADOS PESSOAIS ---*
+*Nascimento:* ${birthDate}
+*Celular:* ${phone}
+*E-mail:* ${email}
+*Como conheceu:* ${howMet}
+
+*--- HISTÓRICO DE SAÚDE ---*
+*Alergias?* ${allergies}
+*Grávida/Amamentando?* ${pregnant}
+*Tipo de Pele:* ${skinType}
+*Outras Condições:* ${otherHealthIssues}
+*Condições de Pele:* ${skinConditions}
+*Lesões Ativas?* ${hasLesions}
+*Proced. Recente?* ${recentProcedure}
+*Já fez B. Lamination?* ${browLamination}
+*Uso de Ácidos?* ${medication}
+
+*--- EXPECTATIVAS ---*
+*Sobrancelhas Hoje:* ${currentBrows}
+*Objetivo:* ${goal}
+*Escala (Natural/Marcada):* ${styleScale}/5
+
+*--- TERMOS ---*
+*Autoriza Uso de Imagem?* ${imageAuth}
+*Assinatura:* ${signature}
+-----------------------------
+Ficha preenchida em ${todayFormatted}.
+                `.trim().replace(/^\s+/gm, '');
+                
+                const whatsappNumber = '5571986301001';
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+                
+                window.open(whatsappUrl, '_blank');
+                
+                const confirmationModal = document.createElement('div');
+                confirmationModal.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
+                confirmationModal.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
+                        <h2 class="text-xl font-bold mb-4 text-gray-800">Agendamento Enviado!</h2>
+                        <p class="text-gray-600 mb-6">Seu pedido de agendamento foi enviado para confirmação e suas informações foram salvas.</p>
+                        <button id="closeConfirmModal" class="px-6 py-2 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-colors duration-200">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(confirmationModal);
+                document.getElementById('closeConfirmModal').onclick = () => {
+                    document.body.removeChild(confirmationModal);
+                    resetBookingProcess();
+                };
+            });
+            
+            function resetBookingProcess() {
+                 bookingState = { services: [], total: 0, date: null, time: null, displayDate: null };
+                 sessionStorage.removeItem('bookingState');
+                 form.reset();
+                 clientNameDisplay.textContent = '...';
+                 serviceList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                 updateBookingSummaryUI();
+                 showView(pricesView, tabPrices);
+            }
+
+            // Lógica do Relatório
+            function loadReport() {
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                const tableBody = document.getElementById('reportTableBody');
+                const noClientsMessage = document.getElementById('noClientsMessage');
+                tableBody.innerHTML = '';
+
+                if (clients.length === 0) {
+                    noClientsMessage.classList.remove('hidden');
+                } else {
+                    noClientsMessage.classList.add('hidden');
+                    clients.sort((a, b) => b.id - a.id); // Show newest first
+                    clients.forEach(client => {
+                        const row = `
+                            <tr class="hover:bg-pink-50/50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${client.name}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${client.phone}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${client.procedure}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${client.registrationDate}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            }
+
+            document.getElementById('downloadCsv').addEventListener('click', () => {
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                if (clients.length === 0) { alert('Nenhum cliente para exportar.'); return; }
+
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Nome,Celular,Procedimento,Data Agendamento,Data Cadastro\n"; // Cabeçalho
+                clients.forEach(client => {
+                    const procedure = client.procedure.replace(/,/g, ';'); // Replace commas to avoid CSV issues
+                    csvContent += `${client.name},${client.phone},"${procedure}",${client.appointmentDateTime || ''},${client.registrationDate}\n`;
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "relatorio_clientes.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            document.getElementById('downloadPdf').addEventListener('click', () => {
+                const clients = JSON.parse(localStorage.getItem('clients')) || [];
+                if (clients.length === 0) { alert('Nenhum cliente para exportar.'); return; }
+
+                const doc = new jsPDF();
+                doc.text("Relatório de Clientes", 14, 16);
+                doc.setFontSize(10);
+                doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 22);
+
+                const tableColumn = ["Nome", "Celular", "Procedimento", "Agendamento", "Data Cadastro"];
+                const tableRows = [];
+
+                clients.forEach(client => {
+                    const clientData = [
+                        client.name,
+                        client.phone,
+                        client.procedure,
+                        client.appointmentDateTime || 'N/A',
+                        client.registrationDate
+                    ];
+                    tableRows.push(clientData);
+                });
+
+                doc.autoTable(tableColumn, tableRows, { startY: 30 });
+                doc.save('relatorio_clientes.pdf');
+            });
+            
+            // --- Restauração da UI ao carregar a página ---
+            const serviceCheckboxes = serviceList.querySelectorAll('input[name="serviceSelection"]');
+            serviceCheckboxes.forEach(checkbox => {
+                const isSelected = bookingState.services.some(s => s.value === checkbox.value);
+                checkbox.checked = isSelected;
+            });
+            updateBookingSummaryUI();
+
+        });
+    </script>
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>
